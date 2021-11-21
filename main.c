@@ -14,7 +14,7 @@ void	print_tab(char **tab, int y)
 	}
 }
 
-char	**make_area(char **tab, int x, int y)
+char	**make_area(char **tab, int y, int x)
 {
 	char 	**res;
 	int	i;
@@ -30,33 +30,54 @@ char	**make_area(char **tab, int x, int y)
 			res[i][j] = tab[i][j];	
 			j++;
 		}
+		res[i][j] = '\0';	
 		i++;
 	}
 	return res;
+}
 
+void	flood_fill_helper(char **tab, t_point size, char clr, int row, int col)
+{
+	if (row < 0 || col < 0 || col >= size.x || row >= size.y)
+		return ;
+	if (tab[row][col] == 'F' || tab[row][col] != clr)
+		return ;
+	tab[row][col] = 'F';
+	flood_fill_helper(tab, size, clr, row + 1, col);
+	flood_fill_helper(tab, size, clr, row - 1, col);
+	flood_fill_helper(tab, size, clr, row, col + 1);
+	flood_fill_helper(tab, size, clr, row, col - 1);
 }
 
 void	flood_fill(char **tab, t_point size, t_point begin)
 {
-	return;
+	char	clr;
+	int	row;
+	int	col;
+
+	clr = tab[begin.y][begin.x];
+	row = begin.y;
+	col = begin.x;
+	
+	flood_fill_helper(tab, size, clr, row, col);
 }
 
 int main(void)
 {
 	char **area;
 	t_point size = {8,5};
-	//t_point begin = {2, 2};
+	t_point begin = {2, 3};
 	char *zone[] = {
-		"11111111",
-		"10001001",
-		"10010001",
-		"10110001",
-		"11100001",	
+		"00001000",
+		"00001000",
+		"00001000",
+		"00001000",
+		"00001000",	
 	};
-	area = make_area(zone, size.x, size.y);
+	area = make_area(zone, size.y, size.x);
 	print_tab(zone, size.y);
-	//flood_fill(area, size, begin);
-	//printf("\n");
-	//print_tab(area);
+	flood_fill(area, size, begin);
+	printf("\n");
+	print_tab(area, size.y);
 	return (0);
 }
